@@ -76,6 +76,7 @@ public class WithdrawalRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
 }
