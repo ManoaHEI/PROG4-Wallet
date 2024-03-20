@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.sql.Timestamp;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,11 +14,15 @@ import java.sql.Date;
 public class Transfer {
 
     private Long       transferId;
-    private BigDecimal transferAmount;
-    private Date       transferDate;
-    private String     transferReason;
-    private String     transferType;
-    private String     transferStatus;
     private Long       accountId;
+    private Long       receiverId;
+    private boolean    haveSameBank;
+    private String     bankName;
+    private BigDecimal transferAmount;
+    private String     transferCategory;
+    private Timestamp  effectiveDate;
+    private Timestamp  registrationDate;
+    private String     transactionRef;
+    private boolean    isCanceled;
 
 }
