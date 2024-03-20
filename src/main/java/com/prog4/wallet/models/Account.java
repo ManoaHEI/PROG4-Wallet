@@ -18,8 +18,8 @@ public class Account {
     private Date       birthdate;
     private BigDecimal salary;
     private BigDecimal balance;
-    private String     accountNumber;
-    private boolean    canTakeCredit;
-    private boolean    alwaysEnableTransaction;
+    private BigDecimal credit;
+    private double     creditInterest;
+    private boolean    canTakeCredit = false;
 
 }

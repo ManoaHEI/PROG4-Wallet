@@ -7,8 +7,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+@Component
 public class DatabaseConnection {
 
+    @Bean
     public static Connection getConnection() {
         try {
             return DriverManager.getConnection(
