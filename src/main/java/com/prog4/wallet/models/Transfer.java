@@ -22,7 +22,7 @@ public class Transfer {
     private String     transferCategory;
     private Timestamp  effectiveDate;
     private Timestamp  registrationDate;
-    private String     transactionRef;
+    private String     transferRef;
     private boolean    isCanceled;
 
 }
