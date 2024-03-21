@@ -5,6 +5,7 @@ import com.prog4.wallet.models.Withdrawal;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,28 +29,27 @@ public class WithdrawalRepository {
         );
     }
 
-    public void doWithdrawal(Withdrawal withdrawal) {
+    public void doWithdrawal(long withdrawalId, BigDecimal withdrawalAmount) throws SQLException {
         String withdrawalSql = "INSERT INTO withdrawal " +
-                "(account_id, withdrawal_amount, withdrawal_date) " +
+                "(account_id, withdrawal_amount) " +
                 "VALUES (?, ?, ?)";
         String accountSql = "UPDATE account SET balance = balance - ? WHERE account_id = ?;";
         try {
             PreparedStatement withdrawStatement = connection.prepareStatement(withdrawalSql);
-            withdrawStatement.setLong(1, withdrawal.getAccountId());
-            withdrawStatement.setBigDecimal(2, withdrawal.getWithdrawalAmount());
-            withdrawStatement.setTimestamp(3, withdrawal.getWithdrawalDate());
+            withdrawStatement.setLong(1, withdrawalId);
+            withdrawStatement.setBigDecimal(2, withdrawalAmount);
             withdrawStatement.executeUpdate();
 
             PreparedStatement accountStatement = connection.prepareStatement(accountSql);
-            accountStatement.setBigDecimal(1, withdrawal.getWithdrawalAmount());
-            accountStatement.setLong(2, withdrawal.getAccountId());
+            accountStatement.setBigDecimal(1, withdrawalAmount);
+            accountStatement.setLong(2, withdrawalId);
             accountStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public List<Withdrawal> getWithdrawalHistory() {
+    public List<Withdrawal> getWithdrawalHistory() throws SQLException {
         List<Withdrawal> withdrawalList = new ArrayList<>();
         String sql = "SELECT * FROM withdrawal;";
         try {
@@ -64,7 +64,7 @@ public class WithdrawalRepository {
         return null;
     }
 
-    public Withdrawal getWithdrawalByAccountId(long accountId) {
+    public Withdrawal getWithdrawalByAccountId(long accountId) throws SQLException {
         String sql = "SELECT * FROM withdrawal WHERE account_id = ?;";
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
