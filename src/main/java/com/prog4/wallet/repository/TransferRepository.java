@@ -53,7 +53,7 @@ public class TransferRepository {
         return null;
     }
 
-    public void transfer(Transfer transfer) throws SQLException {
+    public void doTransfer(Transfer transfer) throws SQLException {
         String sql = "INSERT INTO transfer " +
                 "(account_id, receiver_id, have_same_bank, bank_name, transfer_amount, transfer_category, effective_date) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?);";
@@ -209,6 +209,17 @@ public class TransferRepository {
             statement.setBoolean(1, isCanceled);
             statement.setString(2, transferRef);
         } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateTransferRef(String transferRef) throws SQLException {
+        String sql = "UPDATE transfer SET transfer_ref = ? WHERE tranfer_ref = '00000000'";
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, transferRef);
+            statement.executeUpdate();
+        } catch (SQLException e){
             e.printStackTrace();
         }
     }
