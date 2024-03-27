@@ -34,17 +34,16 @@ public class TransferService {
         return ref.toString();
     }
 
-    @Transactional
     public Transfer receiveTransfer(long id, Transfer transfer) {
         try {
             transferRepository.doTransfer(transfer);
 
             BigDecimal transferAmount = transfer.getTransferAmount();
-            BigDecimal accountBalance = accountRepository.getAccountBalance();
+            BigDecimal accountBalance = accountRepository.getAccountBalance(id);
 
-            BigDecimal newAccountBalance = transferAmount + accountBalance;
+            BigDecimal newAccountBalance = transferAmount.add(accountBalance);
 
-            accountRepository.setAccountBalance(newAccountBalance);
+            accountRepository.setAccountBalance(id, newAccountBalance);
 
             return transfer;
 
@@ -54,7 +53,6 @@ public class TransferService {
         }
     }
 
-    @Transactional
     @Scheduled(cron = "0 0 0 * * ?")
     public String sendTransfer(Transfer transfer) {
         try {
@@ -77,17 +75,17 @@ public class TransferService {
 
             if (
                     currentTimestamp.after(effectiveDate) &&
-                    transferRepository.isCanceled(uniqueRef) == false
+                            !transferRepository.isCanceled(uniqueRef)
             ) {
-                if (senderBalance >= transferAmount && transferAmount != 0) {
-                    senderBalance  = senderBalance - transferAmount;
-                    receiverBalance = receiverBalance + transferAmount;
+                if (senderBalance.compareTo(transferAmount) >= 0 && transferAmount.compareTo(BigDecimal.ZERO) != 0) {
+                    senderBalance  = senderBalance.subtract(transferAmount);
+                    receiverBalance = receiverBalance.add(transferAmount);
 
                     accountRepository.setAccountBalance(accountId, senderBalance);
                     accountRepository.setAccountBalance(receiverId, receiverBalance);
 
                     return "Transfert from " + accountId + " to " + receiverId + " done!";
-                } else if (senderBalance < transferAmount && transferAmount != 0) {
+                } else if (senderBalance.compareTo(transferAmount) < 0 && transferAmount.compareTo(BigDecimal.ZERO) != 0) {
                     return "Insufficient balance";
                 } else {
                     return "Invalid amount";
